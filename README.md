@@ -33,7 +33,7 @@ To get started with The Matrix, follow these steps:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/BearNick/the-matrix.git
+   git clone https://github.com/BearNick/TheMatrix.git
 
 2. Open the project folder in your code editor.
 3. Open index.html in your web browser to experience The Matrix.
