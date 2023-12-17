@@ -55,7 +55,7 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 4. Push your changes to your fork.
 5. Create a pull request to the original repository.
 
-
+This project is licensed under the MIT License - see the LICENSE file for details.
 BearNick, 
 https://themtrx.space
 
