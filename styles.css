@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: #000000; /* Черный фон */
+}
+
+.matrix-code-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+.matrix-code-container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.matrix-code {
+  font-family: 'Courier New', monospace;
+  font-size: 19px;
+  color: #00ff00; /* Зеленый цвет кода */
+  filter: brightness(1.5); /* Увеличиваем яркость в полтора раза */
+  opacity: 0.1;
+  display: flex;
+  flex-direction: column; /* Изменил на вертикальные строчки */
+  align-items: baseline;
+}
+.matrix-code {
+  -webkit-animation: fall linear infinite, flicker 0.1s infinite;
+  animation: fall linear infinite, flicker 0.1s infinite;
+}
+
+.matrix-code span {
+  color: #00ff00; /* Зеленый цвет кода */
+  text-shadow: #FC0 0.5px 0 0.5px;
+
+}
+
+.matrix-code span:last-child {
+  color: #ffffff; /* Белый цвет первого символа */
+  transition: color 100ms, filter 0.5s; /* Плавная смена цвета первого символа и яркость */
+  filter: brightness(5); /* Увеличиваем яркость в два раза и добавляем размытие */
+  text-shadow: #FC0 5px 0 5px;
+}
+
+@keyframes fall {
+  0% {
+    opacity: 0.5;
+    transform: translateY(-100vh);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateY(100vh);
+  }
+}
+
+.language-selector {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+.language-selector button {
+  font-family: 'Matrix Code NFI', monospace;
+  font-size: 30px;
+  color: #00ff00; /* Зеленый цвет кнопки */
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.language-selector button:hover {
+  color: #33ff33; /* Зеленый цвет кнопки при наведении */
+}
+.latin-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* Располагаем кнопку в центре по горизонтали */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none; /* Начально скрываем кнопку */
+  z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+}
+.binary-button {
+  position: fixed;
+  bottom: 20px;
+  left: 80px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none; /* Начально скрываем кнопку */
+  z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+}
+.hebrew-button {
+  position: fixed;
+  bottom: 20px;
+  left: 140px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none; /* Начально скрываем кнопку */
+  z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+}
+.clmn-button {
+  position: fixed;
+  bottom: 20px;
+  left: 250px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none; /* Начально скрываем кнопку */
+  z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+}
+.coffee-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none; /* Начально скрываем кнопку */
+  z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+}
+
+@media only screen and (max-width: 600px) {
+  .latin-button,
+  .binary-button,
+  .hebrew-button,
+  .clmn-button,
+  .coffee-button {
+    position: absolute; /* Позиционирование на мобильных устройствах */
+    bottom: 20px; /* Отступ от нижней части экрана */
+    padding: 10px 20px;
+    background-color: #000;
+    color: #00ff00;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: none; /* Начально скрываем кнопку */
+    z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
+  }
+
+  .latin-button {
+    left: 20px; /* Отступ слева */
+  }
+  .binary-button {
+    left: 80px; /* Отступ слева */
+  }
+  .hebrew-button {
+    left: 140px; /* Отступ слева */
+  }
+  .clmn-button {
+    left: 200px; /* Отступ слева */
+  }
+  .coffee-button {
+    right: 20px; /* Отступ справа */
+  }
+}
