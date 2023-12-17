@@ -22,7 +22,7 @@ You can see a current virsion of The Matrix [here](https://themtrx.space).
 
 - Realistic falling code animation.
 - Choose from different "languages" including Latin, Binary, and Hebrew.
-- Interactive buttons to switch between languages and add more falling code If there are not enough columns (Click Columns+ button for now).
+- Interactive buttons to switch between languages and add more falling code If there are not enough columns (Click Columns+ button).
 - Customize the animation speed and colors to your liking.
 - Support button for contributors.
 
