@@ -5,11 +5,50 @@ const latinButton = document.getElementById('latinButton');
 const binaryButton = document.getElementById('binaryButton');
 const hebrewButton = document.getElementById('hebrewButton');
 const clmnButton = document.getElementById('clmnButton');
+const colorButton = document.getElementById('colorButton');
+const colorPicker = document.getElementById('colorPicker');
+// Используем touchstart вместо click для мобильных устройств
+const clickEvent = ('ontouchstart' in window) ? 'touchstart' : 'click';
+colorPicker.addEventListener('input', function () {
+  changeColor(colorPicker.value);
+});
 
-const numberOfColumns = 99;
+function changeColor(newColor) {
+  // Применяем новый цвет ко всем элементам с классом 'matrix-code'
+  const matrixCodeElements = document.querySelectorAll('.matrix-code span');
+  matrixCodeElements.forEach(element => {
+    element.style.color = newColor;
+  });
+  // Применяем новый цвет ко всем кнопкам
+const buttons = document.querySelectorAll('.matrix-button, .clmn-button, .latin-button, .binary-button, .hebrew-button, .coffee-button, .color-button');
+buttons.forEach(button => {
+  button.style.color = newColor;
+});
+}
+
+colorButton.addEventListener('click', function () {
+  colorPicker.click(); // Эмулируем клик по элементу выбора цвета
+});
+
+colorPicker.addEventListener('input', function () {
+  const selectedColor = colorPicker.value;
+  // Здесь вы можете выполнить дополнительные действия с выбранным цветом
+  console.log('Selected Color:', selectedColor);
+});
+
+// Отображение/скрытие палитры при выборе цвета
+colorPicker.addEventListener('change', function () {
+  colorPicker.style.display = 'none';
+});
+
+colorButton.addEventListener('click', function () {
+  colorPicker.style.display = 'block';
+});
+
+const numberOfColumns = 199;
 let selectedLanguage = 'The Matrix';
 let symbolChangeSpeed = 1;
-let lastSymbolChangeSpeed = 0.1;
+let lastSymbolChangeSpeed = 1;
 
 function getRandomChar() {
   let characters = '';
@@ -75,6 +114,9 @@ function createMatrixCodeColumn() {
     binaryButton.style.display = 'block';
     hebrewButton.style.display = 'block';
     clmnButton.style.display = 'block';
+    colorButton.style.display = 'block';
+    colorPicker.style.display = 'block';
+
   }, 5000);
   return column;
 }
@@ -105,7 +147,7 @@ function startMatrixAnimation() {
   }
 }
 coffeeButton.addEventListener('click', function () {
-  window.location.href = 'https://venmo.com/ConservaThor';
+  window.open('https://www.buymeacoffee.com/themtrx', '_blank');
 });
 
 latinButton.addEventListener('click', function () {
@@ -120,22 +162,27 @@ hebrewButton.addEventListener('click', function () {
   selectedLanguage = 'Hebrew';
 });
 clmnButton.addEventListener('click', function () {
-  const matrixCodeElement = createMatrixCodeElement();
-  const animationDuration = getRandomInt(3333, 6666) / 1000;
-  const animationDelay = getRandomInt(1, 7) / 100;
+  const numberOfColumnsToAdd = 199; // Количество столбцов для добавления
 
-  matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
-  matrixCodeElement.style.zIndex = 1000; // Устанавливаем на верхний уровень
+  for (let i = 0; i < numberOfColumnsToAdd; i++) {
+    const matrixCodeElement = createMatrixCodeElement();
+    const animationDuration = getRandomInt(3333, 6666) / 1000;
+    const animationDelay = getRandomInt(1, 7) / 100;
 
-  // Добавляем символы кода и настраиваем обновление символов
-  setInterval(() => {
-    updateMatrixCodeElement(matrixCodeElement);
-  }, symbolChangeSpeed);
+    matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
+    matrixCodeElement.style.zIndex = 1000; // Устанавливаем на верхний уровень
 
-  setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
+    // Добавляем символы кода и настраиваем обновление символов
+    setInterval(() => {
+      updateMatrixCodeElement(matrixCodeElement);
+    }, symbolChangeSpeed);
 
-  matrixCodesContainer.appendChild(matrixCodeElement);
+    setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
+
+    matrixCodesContainer.appendChild(matrixCodeElement);
+  }
 });
+
 // Ваш код создания кнопки "More Code" и добавления ее на страницу
 function createLanguageButtons() {
   const languages = ['The Matrix'];
