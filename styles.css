@@ -87,7 +87,7 @@ body {
 .latin-button {
   position: fixed;
   bottom: 20px;
-  left: 20px; /* Располагаем кнопку в центре по горизонтали */
+  left: 10px; /* Располагаем кнопку в центре по горизонтали */
   padding: 10px 20px;
   background-color: #000;
   color: #00ff00;
@@ -100,7 +100,7 @@ body {
 .binary-button {
   position: fixed;
   bottom: 20px;
-  left: 80px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  left: 70px; /* Располагаем кнопку в центре по горизонтали с отступом */
   padding: 10px 20px;
   background-color: #000;
   color: #00ff00;
@@ -113,7 +113,7 @@ body {
 .hebrew-button {
   position: fixed;
   bottom: 20px;
-  left: 140px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  left: 130px; /* Располагаем кнопку в центре по горизонтали с отступом */
   padding: 10px 20px;
   background-color: #000;
   color: #00ff00;
@@ -126,7 +126,7 @@ body {
 .clmn-button {
   position: fixed;
   bottom: 20px;
-  left: 250px; /* Располагаем кнопку в центре по горизонтали с отступом */
+  left: 200px; /* Располагаем кнопку в центре по горизонтали с отступом */
   padding: 10px 20px;
   background-color: #000;
   color: #00ff00;
@@ -136,6 +136,29 @@ body {
   display: none; /* Начально скрываем кнопку */
   z-index: 1000; /* Значение может быть любым, важно, чтобы оно было выше, чем у падающего кода */
 }
+.color-button {
+  position: fixed;
+  bottom: 20px;
+  left: 280px; /* Позиционируем кнопку справа от предыдущей кнопки (clmn-button) */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+}
+#colorPicker {
+  position: fixed;
+  opacity: 0;
+  bottom: 20px;
+  left: 400px;
+  display: none;
+  border: none;  /* Добавим стиль без бордера */
+  outline: none; /* Добавим стиль без аутлайна */
+}
+
 .coffee-button {
   position: fixed;
   bottom: 20px;
@@ -155,6 +178,7 @@ body {
   .binary-button,
   .hebrew-button,
   .clmn-button,
+  .color-button,
   .coffee-button {
     position: absolute; /* Позиционирование на мобильных устройствах */
     bottom: 20px; /* Отступ от нижней части экрана */
@@ -169,16 +193,19 @@ body {
   }
 
   .latin-button {
-    left: 20px; /* Отступ слева */
+    left: 10px; /* Отступ слева */
   }
   .binary-button {
-    left: 80px; /* Отступ слева */
+    left: 70px; /* Отступ слева */
   }
   .hebrew-button {
-    left: 140px; /* Отступ слева */
+    left: 130px; /* Отступ слева */
   }
   .clmn-button {
     left: 200px; /* Отступ слева */
+  }
+  .color-button {
+    left: 280px; /* Отступ слева */
   }
   .coffee-button {
     right: 20px; /* Отступ справа */
