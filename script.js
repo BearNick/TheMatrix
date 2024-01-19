@@ -47,7 +47,7 @@ colorButton.addEventListener('click', function () {
 
 const numberOfColumns = 199;
 let selectedLanguage = 'The Matrix';
-let symbolChangeSpeed = 1;
+let symbolChangeSpeed = 100;
 let lastSymbolChangeSpeed = 1;
 
 function getRandomChar() {
