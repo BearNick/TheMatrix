@@ -27,21 +27,14 @@ body {
   font-family: 'Courier New', monospace;
   font-size: 19px;
   color: #00ff00; /* Зеленый цвет кода */
-  filter: brightness(1.5); /* Увеличиваем яркость в полтора раза */
   opacity: 0.1;
   display: flex;
   flex-direction: column; /* Изменил на вертикальные строчки */
   align-items: baseline;
 }
-.matrix-code {
-  -webkit-animation: fall linear infinite, flicker 0.1s infinite;
-  animation: fall linear infinite, flicker 0.1s infinite;
-}
 
 .matrix-code span {
-  color: #00ff00; /* Зеленый цвет кода */
-  text-shadow: #FC0 0.5px 0 0.5px;
-
+  text-shadow: #FC0 1.5px 0 1.5px;
 }
 
 .matrix-code span:last-child {
@@ -149,6 +142,30 @@ body {
   display: none;
   z-index: 1000;
 }
+.reverse-button {
+  position: fixed;
+  bottom: 20px;
+  left: 360px; /* Позиционируем кнопку справа от предыдущей кнопки (clmn-button) */
+  padding: 10px 20px;
+  background-color: #000;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+}
+@keyframes fall-reverse {
+  0% {
+    opacity: 0.5;
+    transform: translateY(100vh);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateY(-100vh);
+  }
+}
+
 #colorPicker {
   position: fixed;
   opacity: 0;
@@ -185,6 +202,7 @@ body {
     padding: 10px 20px;
     background-color: #000;
     color: #00ff00;
+    filter: brightness(1.5); /* Увеличиваем яркость в полтора раза */
     border: none;
     outline: none;
     cursor: pointer;
