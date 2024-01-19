@@ -20,7 +20,7 @@ function changeColor(newColor) {
     element.style.color = newColor;
   });
   // Применяем новый цвет ко всем кнопкам
-const buttons = document.querySelectorAll('.matrix-button, .clmn-button, .latin-button, .binary-button, .hebrew-button, .coffee-button, .color-button');
+const buttons = document.querySelectorAll('.matrix-button, .clmn-button, .latin-button, .binary-button, .hebrew-button, .coffee-button, .color-button, .reverse-button');
 buttons.forEach(button => {
   button.style.color = newColor;
 });
@@ -47,7 +47,7 @@ colorButton.addEventListener('click', function () {
 
 const numberOfColumns = 199;
 let selectedLanguage = 'The Matrix';
-let symbolChangeSpeed = 100;
+let symbolChangeSpeed = 50;
 let lastSymbolChangeSpeed = 1;
 
 function getRandomChar() {
@@ -116,6 +116,7 @@ function createMatrixCodeColumn() {
     clmnButton.style.display = 'block';
     colorButton.style.display = 'block';
     colorPicker.style.display = 'block';
+    reverseButton.style.display = 'block';
 
   }, 5000);
   return column;
@@ -182,6 +183,43 @@ clmnButton.addEventListener('click', function () {
     matrixCodesContainer.appendChild(matrixCodeElement);
   }
 });
+const reverseButton = document.getElementById('reverseButton');
+let isReversed = false;
+
+reverseButton.addEventListener('click', function () {
+  isReversed = !isReversed;
+  reverseMatrixAnimation();
+});
+
+function reverseMatrixAnimation() {
+  const matrixCodeElements = document.querySelectorAll('.matrix-code');
+
+  matrixCodeElements.forEach(matrixCodeElement => {
+    const animationDuration = getRandomInt(3999, 6666) / 1000;
+    const animationDelay = getRandomInt(100, 1111) / 100;
+
+    if (isReversed) {
+      matrixCodeElement.style.animation = `fall-reverse ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
+    } else {
+      matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
+    }
+
+    // Применяем реверсивное отображение
+    if (isReversed) {
+      matrixCodeElement.style.transform = 'scaleY(-1)';
+    }
+
+    setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
+
+    setInterval(() => {
+      updateMatrixCodeElement(matrixCodeElement);
+    }, symbolChangeSpeed);
+  });
+}
+
+// Остальной код оставляем неизменным
+// ...
+
 
 // Ваш код создания кнопки "More Code" и добавления ее на страницу
 function createLanguageButtons() {
