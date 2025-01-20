@@ -16,7 +16,7 @@ The Matrix is a fun and interactive web project that simulates the iconic "falli
 
 ## Demo
 
-You can see a current virsion of The Matrix [here](https://themtrx.space).
+You can see a current virsion of The Matrix [here](https://themtrx.ru).
 
 ## Features
 
