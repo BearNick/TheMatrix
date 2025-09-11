@@ -8,7 +8,7 @@
   <meta name="author" content="Nick Ishchenko">
   <meta name="robots" content="index, follow">
   <title>The Matrix</title>
-  <link rel="stylesheet" href="styles.css?v=1.96">
+  <link rel="stylesheet" href="styles.css?v=2.51">
   <!-- Favicons -->
   <link href="favicon.ico" rel="icon">
   <link rel="shortcut icon" href="favicon-16x16.png" sizes="16x16">
@@ -17,10 +17,22 @@
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5349309250474141"
      crossorigin="anonymous"></script>
+  <style>
+    /* tiny inline fallback for controls layout until CSS loads */
+    .controls{position:fixed;bottom:68px;left:10px;z-index:1000;display:none;gap:10px;align-items:center;background:rgba(0,0,0,.5);padding:6px 10px;border-radius:10px}
+    .controls label{font:14px/1.2 monospace}
+    .controls input[type=range]{width:160px}
+  </style>
 </head>
 <body>
   <div class="language-selector" id="languageSelector"></div>
   <div class="matrix-code-container" id="matrixCodesContainer"></div>
+
+  <div class="controls" id="controls">
+    <label for="speedSlider">Change speed</label>
+    <input id="speedSlider" type="range" min="20" max="1000" step="10" value="120" />
+  </div>
+
   <button class="clmn-button" id="clmnButton">Сolumns+</button>
   <button class="latin-button" id="latinButton">Latin</button>
   <button class="binary-button" id="binaryButton">Binary</button>
@@ -32,15 +44,6 @@
 
   <button class="coffee-button" id="coffeeButton">Buy me a Coffee</button>
 
-  <script src="script.js?v=1.96"></script>
+  <script src="script.js?v=2.51"></script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X88J2H6RKN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-X88J2H6RKN');
-  </script>
-</body>
-</html>

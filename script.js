@@ -1,3 +1,4 @@
+/* === Matrix script v2.10 === */
 const matrixCodesContainer = document.getElementById('matrixCodesContainer');
 const languageSelector = document.getElementById('languageSelector');
 const coffeeButton = document.getElementById('coffeeButton');
@@ -7,65 +8,86 @@ const hebrewButton = document.getElementById('hebrewButton');
 const clmnButton = document.getElementById('clmnButton');
 const colorButton = document.getElementById('colorButton');
 const colorPicker = document.getElementById('colorPicker');
-// Используем touchstart вместо click для мобильных устройств
-const clickEvent = ('ontouchstart' in window) ? 'touchstart' : 'click';
-colorPicker.addEventListener('input', function () {
-  changeColor(colorPicker.value);
-});
+const reverseButton = document.getElementById('reverseButton');
+const controls = document.getElementById('controls');
+const speedSlider = document.getElementById('speedSlider');
 
+// Use touchstart on mobile
+const clickEvent = ('ontouchstart' in window) ? 'touchstart' : 'click';
+
+// ===== Color handling via CSS variables =====
+function hexToHsl(hex){
+  let r=0,g=0,b=0;
+  if(hex.length==4){ r="0x"+hex[1]+hex[1]; g="0x"+hex[2]+hex[2]; b="0x"+hex[3]+hex[3]; }
+  else if(hex.length==7){ r="0x"+hex[1]+hex[2]; g="0x"+hex[3]+hex[4]; b="0x"+hex[5]+hex[6]; }
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0,s=0,l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    s = l>0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max){
+      case r: h=(g-b)/d + (g<b?6:0); break;
+      case g: h=(b-r)/d + 2; break;
+      case b: h=(r-g)/d + 4; break;
+    }
+    h/=6;
+  }
+  return {h,s,l};
+}
+function hslToHex(h,s,l){
+  function f(n){
+    const k=(n+h*12)%12;
+    const a=s*Math.min(l,1-l);
+    const c=l - a*Math.max(-1, Math.min(k-3, Math.min(9-k,1)));
+    return Math.round(255*c).toString(16).padStart(2,'0');
+  }
+  return "#"+f(0)+f(8)+f(4);
+}
 function changeColor(newColor) {
-  // Применяем новый цвет ко всем элементам с классом 'matrix-code'
-  const matrixCodeElements = document.querySelectorAll('.matrix-code span');
-  matrixCodeElements.forEach(element => {
-    element.style.color = newColor;
-  });
-  // Применяем новый цвет ко всем кнопкам
-const buttons = document.querySelectorAll('.matrix-button, .clmn-button, .latin-button, .binary-button, .hebrew-button, .coffee-button, .color-button, .reverse-button');
-buttons.forEach(button => {
-  button.style.color = newColor;
-});
+  // base color
+  document.documentElement.style.setProperty('--code-color', newColor);
+  // brighter head color
+  try{
+    const {h,s,l}=hexToHsl(newColor);
+    const head = hslToHex(h, Math.min(1, s*0.9), Math.min(1, l+0.25));
+    document.documentElement.style.setProperty('--head-color', head);
+  }catch(e){ /* ignore */ }
 }
 
-colorButton.addEventListener('click', function () {
-  colorPicker.click(); // Эмулируем клик по элементу выбора цвета
-});
-
-colorPicker.addEventListener('input', function () {
-  const selectedColor = colorPicker.value;
-  // Здесь вы можете выполнить дополнительные действия с выбранным цветом
-  console.log('Selected Color:', selectedColor);
-});
-
-// Отображение/скрытие палитры при выборе цвета
-colorPicker.addEventListener('change', function () {
-  colorPicker.style.display = 'none';
-});
-
-colorButton.addEventListener('click', function () {
+// Color UI
+colorButton.addEventListener('click', () => {
   colorPicker.style.display = 'block';
+  colorPicker.click();
 });
+colorPicker.addEventListener('input', () => changeColor(colorPicker.value));
+colorPicker.addEventListener('change', () => { colorPicker.style.display = 'none'; });
 
-const numberOfColumns = 199;
+// ===== Matrix logic =====
 let selectedLanguage = 'The Matrix';
-let symbolChangeSpeed = 50;
-let lastSymbolChangeSpeed = 1;
+let isReversed = false;
+// symbol change speed (ms) controlled by slider; default matches slider value
+let symbolChangeMs = parseInt(speedSlider?.value || "120", 10);
+
+// Keep references to intervals so we can change speed at runtime
+const intervalRegistry = new Set();
+
+function clearAllIntervals(){
+  for(const id of intervalRegistry){
+    clearInterval(id);
+  }
+  intervalRegistry.clear();
+}
 
 function getRandomChar() {
   let characters = '';
-
-  if (selectedLanguage === 'The Matrix') {
+  if (selectedLanguage === 'The Matrix' || selectedLanguage === 'Latin') {
     characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-  }
-  else if (selectedLanguage === 'Latin') {
-    characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-  }
-   else if (selectedLanguage === 'Binary') {
+  } else if (selectedLanguage === 'Binary') {
     characters = '01';
-  }
-  else if (selectedLanguage === 'Hebrew') {
+  } else if (selectedLanguage === 'Hebrew') {
     characters = '0123456789!@#$%^&*()_+-=[]{}|;:,.<>?אבגדהוזחטיכלמנסעפצקרשת';
   }
-
   const randomIndex = Math.floor(Math.random() * characters.length);
   return characters.charAt(randomIndex);
 }
@@ -73,155 +95,91 @@ function getRandomChar() {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 function createMatrixCodeElement() {
-  const matrixCodeElement = document.createElement('div');
-  matrixCodeElement.className = 'matrix-code';
-  const codeColumn = createMatrixCodeColumn();
-  matrixCodeElement.innerHTML = codeColumn.map(char => `<span>${char}</span>`).join('');
-
-  return matrixCodeElement;
-}
-
-function updateMatrixCodeElement(matrixCodeElement) {
-  const spans = matrixCodeElement.querySelectorAll('span');
-
-  if (spans.length > 0) {
-    const numberOfChanges = getRandomInt(1, 9);
-
-    for (let i = 0; i < numberOfChanges; i++) {
-      const randomIndex = getRandomInt(0, spans.length - 1);
-      spans[randomIndex].textContent = getRandomChar();
-    }
-  }
-}
-
-
-function setLastSymbolChangeSpeed(matrixCodeElement, speed) {
-  const lastSpan = matrixCodeElement.querySelector('span:last-child');
-  lastSpan.style.transition = `color ${speed}ms`;
-}
-
-function createMatrixCodeColumn() {
+  const el = document.createElement('div');
+  el.className = 'matrix-code';
+  const lineCount = Math.floor(window.innerHeight / 20); // approx line height
   const column = [];
-  const columnLength = getRandomInt(1, 55);
-
-  for (let i = 1; i < columnLength; i++) {
-    column.push(getRandomChar());
+  const columnLength = getRandomInt(Math.max(8, Math.floor(lineCount*0.35)), Math.max(12, Math.floor(lineCount*0.9)));
+  for (let i = 0; i < columnLength; i++) {
+    column.push(`<span>${getRandomChar()}</span>`);
   }
-  setTimeout(() => {
-    coffeeButton.style.display = 'block';
-    latinButton.style.display = 'block';
-    binaryButton.style.display = 'block';
-    hebrewButton.style.display = 'block';
-    clmnButton.style.display = 'block';
-    colorButton.style.display = 'block';
-    colorPicker.style.display = 'block';
-    reverseButton.style.display = 'block';
+  el.innerHTML = column.join('');
+  return el;
+}
 
-  }, 5000);
-  return column;
+function updateMatrixCodeElement(el) {
+  const spans = el.querySelectorAll('span');
+  if (spans.length === 0) return;
+  const changes = getRandomInt(1, Math.min(9, spans.length));
+  for (let i = 0; i < changes; i++) {
+    const idx = getRandomInt(0, spans.length - 1);
+    spans[idx].textContent = getRandomChar();
+  }
+}
+
+function startUpdater(el){
+  const id = setInterval(() => updateMatrixCodeElement(el), symbolChangeMs);
+  intervalRegistry.add(id);
+  // clean up if element removed
+  el.addEventListener('remove', () => { clearInterval(id); intervalRegistry.delete(id); }, {once:true});
+}
+
+function applyAnimation(el){
+  const duration = getRandomInt(3500, 6500) / 1000;
+  const delay = getRandomInt(0, 1000) / 1000;
+  const base = isReversed ? 'fall-reverse' : 'fall';
+  el.style.animation = `${base} ${duration}s ${delay}s linear infinite`;
+}
+
+function populateColumns(count){
+  for(let i=0;i<count;i++){
+    const el = createMatrixCodeElement();
+    applyAnimation(el);
+    startUpdater(el);
+    matrixCodesContainer.appendChild(el);
+  }
 }
 
 function startMatrixAnimation() {
   matrixCodesContainer.innerHTML = '';
+  clearAllIntervals();
   languageSelector.style.display = 'none';
 
-  const numberOfLayers = 111;
-
-  for (let layer = 1; layer <= numberOfLayers; layer++) {
-    for (let i = 0; i < 111; i++) {
-      const matrixCodeElement = createMatrixCodeElement();
-      const animationDuration = getRandomInt(3999, 6666) / 1000;
-      const animationDelay = getRandomInt(100, 1111) / 100;
-
-      matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
-      matrixCodeElement.style.zIndex = layer;
-
-      setInterval(() => {
-        updateMatrixCodeElement(matrixCodeElement);
-      }, symbolChangeSpeed);
-
-      setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
-
-      matrixCodesContainer.appendChild(matrixCodeElement);
-    }
-  }
+  // Compute sensible number of columns based on viewport
+  const approxCharWidth = 12; // px
+  const columns = Math.floor(window.innerWidth / approxCharWidth / 2); // half-density looks nicer
+  populateColumns(Math.max(60, columns)); // ensure minimum
 }
-coffeeButton.addEventListener('click', function () {
-  window.open('https://www.buymeacoffee.com/themtrx', '_blank');
+
+// Buttons
+coffeeButton.addEventListener('click', () => window.open('https://venmo.com/u/ConservaThor', '_blank'));
+latinButton.addEventListener('click', () => { selectedLanguage = 'Latin'; });
+binaryButton.addEventListener('click', () => { selectedLanguage = 'Binary'; });
+hebrewButton.addEventListener('click', () => { selectedLanguage = 'Hebrew'; });
+
+clmnButton.addEventListener('click', () => {
+  // Add a burst of columns
+  populateColumns(40);
 });
 
-latinButton.addEventListener('click', function () {
-  selectedLanguage = 'Latin';
-});
-
-binaryButton.addEventListener('click', function () {
-  selectedLanguage = 'Binary';
-});
-
-hebrewButton.addEventListener('click', function () {
-  selectedLanguage = 'Hebrew';
-});
-clmnButton.addEventListener('click', function () {
-  const numberOfColumnsToAdd = 199; // Количество столбцов для добавления
-
-  for (let i = 0; i < numberOfColumnsToAdd; i++) {
-    const matrixCodeElement = createMatrixCodeElement();
-    const animationDuration = getRandomInt(3333, 6666) / 1000;
-    const animationDelay = getRandomInt(1, 7) / 100;
-
-    matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
-    matrixCodeElement.style.zIndex = 1000; // Устанавливаем на верхний уровень
-
-    // Добавляем символы кода и настраиваем обновление символов
-    setInterval(() => {
-      updateMatrixCodeElement(matrixCodeElement);
-    }, symbolChangeSpeed);
-
-    setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
-
-    matrixCodesContainer.appendChild(matrixCodeElement);
-  }
-});
-const reverseButton = document.getElementById('reverseButton');
-let isReversed = false;
-
-reverseButton.addEventListener('click', function () {
+reverseButton.addEventListener('click', () => {
   isReversed = !isReversed;
-  reverseMatrixAnimation();
+  const nodes = document.querySelectorAll('.matrix-code');
+  nodes.forEach(n => applyAnimation(n));
 });
 
-function reverseMatrixAnimation() {
-  const matrixCodeElements = document.querySelectorAll('.matrix-code');
-
-  matrixCodeElements.forEach(matrixCodeElement => {
-    const animationDuration = getRandomInt(3999, 6666) / 1000;
-    const animationDelay = getRandomInt(100, 1111) / 100;
-
-    if (isReversed) {
-      matrixCodeElement.style.animation = `fall-reverse ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
-    } else {
-      matrixCodeElement.style.animation = `fall ${animationDuration}s ${animationDelay}s linear infinite, flicker 0.1s infinite`;
-    }
-
-    // Применяем реверсивное отображение
-    if (isReversed) {
-      matrixCodeElement.style.transform = 'scaleY(-1)';
-    }
-
-    setLastSymbolChangeSpeed(matrixCodeElement, lastSymbolChangeSpeed);
-
-    setInterval(() => {
-      updateMatrixCodeElement(matrixCodeElement);
-    }, symbolChangeSpeed);
+// Speed control: restart all updaters with new interval
+if (speedSlider){
+  speedSlider.addEventListener('input', () => {
+    symbolChangeMs = parseInt(speedSlider.value,10);
+    clearAllIntervals();
+    document.querySelectorAll('.matrix-code').forEach(el => startUpdater(el));
   });
 }
 
-// Остальной код оставляем неизменным
-// ...
-
-
-// Ваш код создания кнопки "More Code" и добавления ее на страницу
+// Language menu
 function createLanguageButtons() {
   const languages = ['The Matrix'];
   languages.forEach(language => {
@@ -234,9 +192,15 @@ function createLanguageButtons() {
     };
     languageSelector.appendChild(button);
   });
-
-  // Добавляем комментарий к кнопке "The Matrix"
-    const matrixButton = document.querySelector('.matrix-button');
-    matrixButton.title = 'are Watching...';
-  }
+  const matrixButton = document.querySelector('.matrix-button');
+  matrixButton.title = 'are Watching...';
+}
 createLanguageButtons();
+
+// Reveal UI after short intro
+setTimeout(() => {
+  [coffeeButton, latinButton, binaryButton, hebrewButton, clmnButton, colorButton, reverseButton].forEach(b => b.style.display='block');
+  controls.style.display = 'flex';
+  // Start with default color sync
+  changeColor(getComputedStyle(document.documentElement).getPropertyValue('--code-color') || '#00ff00');
+}, 2000);
